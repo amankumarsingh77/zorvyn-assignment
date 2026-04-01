@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+assignment.txt
+docs/superpowers/
+
+/generated/prisma
+.worktrees/
+.harness/
