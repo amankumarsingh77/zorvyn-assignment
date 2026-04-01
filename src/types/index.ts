@@ -7,4 +7,5 @@ export type JwtPayload = {
 
 export type Variables = {
   user: JwtPayload;
+  validated: unknown;
 };
