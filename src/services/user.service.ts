@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import { AppError } from "../middleware/errorHandler.js";
-import { HTTP_NOT_FOUND, HTTP_CONFLICT } from "../constants/http.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { HTTP_NOT_FOUND, HTTP_CONFLICT } from "@/constants/http.js";
 import {
   findUsers,
   countUsers,
@@ -10,8 +10,8 @@ import {
   updateUserById,
   deleteUserById,
   countUserRecords,
-} from "../repositories/user.repository.js";
-import type { CreateUserInput, UpdateUserInput, ListUsersQuery } from "../validations/user.schema.js";
+} from "@/repositories/user.repository.js";
+import type { CreateUserInput, UpdateUserInput, ListUsersQuery } from "@/validations/user.schema.js";
 
 type UserWithoutPassword = Awaited<ReturnType<typeof findUserById>> & {};
 

@@ -1,11 +1,11 @@
 import type { Next } from "hono";
 import type { Context } from "hono";
 import jwt from "jsonwebtoken";
-import { env } from "../config/env.js";
-import { AppError } from "./errorHandler.js";
-import { HTTP_UNAUTHORIZED } from "../constants/http.js";
-import { isJwtPayload } from "../types/index.js";
-import type { AppEnv } from "../types/index.js";
+import { env } from "@/config/env.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { HTTP_UNAUTHORIZED } from "@/constants/http.js";
+import { isJwtPayload } from "@/types/index.js";
+import type { AppEnv } from "@/types/index.js";
 
 const BEARER_PREFIX_LENGTH = 7;
 

@@ -1,15 +1,15 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
-import { env } from "./config/env.js";
-import { checkDatabaseConnection } from "./repositories/health.repository.js";
-import { successResponse } from "./helpers/response.js";
-import { HTTP_SERVICE_UNAVAILABLE } from "./constants/http.js";
-import { errorHandler } from "./middleware/errorHandler.js";
-import type { AppEnv } from "./types/index.js";
-import { authRoutes } from "./routes/auth.routes.js";
-import { userRoutes } from "./routes/user.routes.js";
-import { recordRoutes } from "./routes/record.routes.js";
+import { env } from "@/config/env.js";
+import { checkDatabaseConnection } from "@/repositories/health.repository.js";
+import { successResponse } from "@/helpers/response.js";
+import { HTTP_SERVICE_UNAVAILABLE } from "@/constants/http.js";
+import { errorHandler } from "@/middleware/errorHandler.js";
+import type { AppEnv } from "@/types/index.js";
+import { authRoutes } from "@/routes/auth.routes.js";
+import { userRoutes } from "@/routes/user.routes.js";
+import { recordRoutes } from "@/routes/record.routes.js";
 
 const CORS_MAX_AGE = 3600;
 

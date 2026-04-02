@@ -1,6 +1,6 @@
-import { Prisma } from "../../generated/prisma/client.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { HTTP_NOT_FOUND } from "../constants/http.js";
+import { Prisma } from "@generated/prisma/client.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { HTTP_NOT_FOUND } from "@/constants/http.js";
 import {
   findRecords,
   countRecords,
@@ -8,8 +8,8 @@ import {
   createRecord as repoCreateRecord,
   updateRecordById,
   deleteRecordById,
-} from "../repositories/record.repository.js";
-import type { CreateRecordInput, UpdateRecordInput, ListRecordsQuery } from "../validations/record.schema.js";
+} from "@/repositories/record.repository.js";
+import type { CreateRecordInput, UpdateRecordInput, ListRecordsQuery } from "@/validations/record.schema.js";
 
 type RecordWithCreator = Awaited<ReturnType<typeof findRecordById>> & {};
 

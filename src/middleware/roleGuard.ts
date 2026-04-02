@@ -1,8 +1,8 @@
 import type { Context, Next } from "hono";
-import type { Role } from "../../generated/prisma/client.js";
-import { AppError } from "./errorHandler.js";
-import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN } from "../constants/http.js";
-import type { AppEnv } from "../types/index.js";
+import type { Role } from "@generated/prisma/client.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN } from "@/constants/http.js";
+import type { AppEnv } from "@/types/index.js";
 
 export function requireRole(...allowedRoles: Role[]): (c: Context<AppEnv>, next: Next) => Promise<void> {
   return async (c: Context<AppEnv>, next: Next): Promise<void> => {

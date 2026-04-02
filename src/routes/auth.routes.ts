@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { validate } from "../middleware/validate.js";
-import { registerSchema, loginSchema } from "../validations/auth.schema.js";
-import * as authService from "../services/auth.service.js";
-import { successResponse } from "../helpers/response.js";
-import { HTTP_CREATED } from "../constants/http.js";
-import type { AppEnv } from "../types/index.js";
+import { validate } from "@/middleware/validate.js";
+import { registerSchema, loginSchema } from "@/validations/auth.schema.js";
+import * as authService from "@/services/auth.service.js";
+import { successResponse } from "@/helpers/response.js";
+import { HTTP_CREATED } from "@/constants/http.js";
+import type { AppEnv } from "@/types/index.js";
 
 const authRoutes = new Hono<AppEnv>();
 
