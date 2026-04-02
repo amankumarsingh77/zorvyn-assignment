@@ -7,6 +7,7 @@ import { HTTP_SERVICE_UNAVAILABLE } from "./constants/http.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import type { AppEnv } from "./types/index.js";
 import { authRoutes } from "./routes/auth.routes.js";
+import { userRoutes } from "./routes/user.routes.js";
 
 const app = new Hono<AppEnv>();
 
@@ -21,6 +22,7 @@ app.get("/health", async (c) => {
 });
 
 app.route("/auth", authRoutes);
+app.route("/users", userRoutes);
 
 serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   console.info(`Server running on http://localhost:${info.port}`);
