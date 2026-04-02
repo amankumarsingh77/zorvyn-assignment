@@ -2,13 +2,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { AppError } from "../middleware/errorHandler.js";
-import { findUserByEmail, createUser } from "../repositories/user.repository.js";
+import { findUserByEmail, findUserByEmailWithPassword, createUser } from "../repositories/user.repository.js";
 import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT } from "../constants/http.js";
 import type { RegisterInput, LoginInput } from "../validations/auth.schema.js";
 import type { JwtPayload } from "../types/index.js";
-import type { Prisma, Role } from "../../generated/prisma/client.js";
-
-type UserWithoutPassword = Omit<Prisma.UserGetPayload<object>, "password">;
+import type { Role } from "../../generated/prisma/client.js";
 
 interface LoginUser {
   readonly id: string;
@@ -20,7 +18,15 @@ interface LoginUser {
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = "24h";
 
-export async function register(input: RegisterInput): Promise<UserWithoutPassword> {
+export async function register(input: RegisterInput): Promise<{
+  readonly id: string;
+  readonly email: string;
+  readonly name: string;
+  readonly role: Role;
+  readonly status: string;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+}> {
   const existing = await findUserByEmail(input.email);
 
   if (existing) {
@@ -29,18 +35,15 @@ export async function register(input: RegisterInput): Promise<UserWithoutPasswor
 
   const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
 
-  const user = await createUser({
+  return createUser({
     email: input.email,
     password: hashedPassword,
     name: input.name,
   });
-
-  const { password: _, ...userWithoutPassword } = user;
-  return userWithoutPassword;
 }
 
 export async function login(input: LoginInput): Promise<{ token: string; user: LoginUser }> {
-  const user = await findUserByEmail(input.email);
+  const user = await findUserByEmailWithPassword(input.email);
 
   if (!user) {
     throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Invalid email or password");
