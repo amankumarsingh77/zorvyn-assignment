@@ -7,3 +7,4 @@ docs/superpowers/
 /generated/prisma
 .worktrees/
 .harness/
+api-tester.html
