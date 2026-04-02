@@ -6,9 +6,16 @@ import { findUserByEmail, createUser } from "../repositories/user.repository.js"
 import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT } from "../constants/http.js";
 import type { RegisterInput, LoginInput } from "../validations/auth.schema.js";
 import type { JwtPayload } from "../types/index.js";
-import type { Prisma } from "../../generated/prisma/client.js";
+import type { Prisma, Role } from "../../generated/prisma/client.js";
 
 type UserWithoutPassword = Omit<Prisma.UserGetPayload<object>, "password">;
+
+interface LoginUser {
+  readonly id: string;
+  readonly email: string;
+  readonly name: string;
+  readonly role: Role;
+}
 
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = "24h";
@@ -17,7 +24,7 @@ export async function register(input: RegisterInput): Promise<UserWithoutPasswor
   const existing = await findUserByEmail(input.email);
 
   if (existing) {
-    throw new AppError(HTTP_CONFLICT, "DUPLICATE_EMAIL", "A user with this email already exists");
+    throw new AppError(HTTP_CONFLICT, "CONFLICT", "Email already registered");
   }
 
   const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
@@ -32,21 +39,21 @@ export async function register(input: RegisterInput): Promise<UserWithoutPasswor
   return userWithoutPassword;
 }
 
-export async function login(input: LoginInput): Promise<{ token: string; user: UserWithoutPassword }> {
+export async function login(input: LoginInput): Promise<{ token: string; user: LoginUser }> {
   const user = await findUserByEmail(input.email);
 
   if (!user) {
-    throw new AppError(HTTP_UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password");
+    throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Invalid email or password");
   }
 
   if (user.status === "INACTIVE") {
-    throw new AppError(HTTP_FORBIDDEN, "ACCOUNT_INACTIVE", "Account is inactive");
+    throw new AppError(HTTP_FORBIDDEN, "FORBIDDEN", "Account is inactive");
   }
 
   const passwordMatch = await bcrypt.compare(input.password, user.password);
 
   if (!passwordMatch) {
-    throw new AppError(HTTP_UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password");
+    throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Invalid email or password");
   }
 
   const payload: JwtPayload = {
@@ -56,6 +63,8 @@ export async function login(input: LoginInput): Promise<{ token: string; user: U
 
   const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
 
-  const { password: _, ...userWithoutPassword } = user;
-  return { token, user: userWithoutPassword };
+  return {
+    token,
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+  };
 }

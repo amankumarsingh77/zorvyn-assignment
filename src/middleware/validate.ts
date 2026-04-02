@@ -11,7 +11,11 @@ export function validate(schema: ZodType, target: ValidationTarget = "json"): (c
     let data: unknown;
 
     if (target === "json") {
-      data = await c.req.json();
+      try {
+        data = await c.req.json();
+      } catch {
+        throw new AppError(HTTP_BAD_REQUEST, "VALIDATION_ERROR", "Invalid JSON body");
+      }
     } else if (target === "query") {
       data = c.req.query();
     } else {
@@ -26,7 +30,7 @@ export function validate(schema: ZodType, target: ValidationTarget = "json"): (c
           const path = issue.path.join(".");
           return path ? `${path}: ${issue.message}` : issue.message;
         })
-        .join("; ");
+        .join(", ");
 
       throw new AppError(HTTP_BAD_REQUEST, "VALIDATION_ERROR", formatted);
     }
