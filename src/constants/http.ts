@@ -3,6 +3,7 @@ export const HTTP_CREATED = 201 as const;
 export const HTTP_BAD_REQUEST = 400 as const;
 export const HTTP_UNAUTHORIZED = 401 as const;
 export const HTTP_FORBIDDEN = 403 as const;
+export const HTTP_NOT_FOUND = 404 as const;
 export const HTTP_CONFLICT = 409 as const;
 export const HTTP_INTERNAL_SERVER_ERROR = 500 as const;
 export const HTTP_SERVICE_UNAVAILABLE = 503 as const;
