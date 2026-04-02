@@ -1,10 +1,11 @@
 import type { Role } from "../../generated/prisma/client.js";
 
-export type JwtPayload = {
-  userId: string;
-  role: Role;
-};
+export interface JwtPayload {
+  readonly userId: string;
+  readonly role: Role;
+}
 
-export type Variables = {
-  user: JwtPayload;
-};
+export interface Variables {
+  readonly user: JwtPayload;
+  readonly validated: unknown;
+}

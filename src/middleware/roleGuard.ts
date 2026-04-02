@@ -1,0 +1,21 @@
+import type { Context, Next } from "hono";
+import type { Role } from "../../generated/prisma/client.js";
+import { AppError } from "./errorHandler.js";
+import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN } from "../constants/http.js";
+import type { JwtPayload } from "../types/index.js";
+
+export function requireRole(...allowedRoles: Role[]): (c: Context, next: Next) => Promise<void> {
+  return async (c: Context, next: Next): Promise<void> => {
+    const user = c.get("user") as JwtPayload | undefined;
+
+    if (!user) {
+      throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Authentication required");
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      throw new AppError(HTTP_FORBIDDEN, "FORBIDDEN", "Insufficient permissions");
+    }
+
+    await next();
+  };
+}
