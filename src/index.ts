@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import type { AppEnv } from "./types/index.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import { userRoutes } from "./routes/user.routes.js";
+import { recordRoutes } from "./routes/record.routes.js";
 
 const CORS_MAX_AGE = 3600;
 
@@ -34,6 +35,7 @@ app.get("/health", async (c) => {
 
 app.route("/auth", authRoutes);
 app.route("/users", userRoutes);
+app.route("/records", recordRoutes);
 
 serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   console.info(`Server running on http://localhost:${info.port}`);
