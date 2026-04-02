@@ -2,11 +2,12 @@ import type { Context, Next } from "hono";
 import type { ZodType } from "zod";
 import { AppError } from "./errorHandler.js";
 import { HTTP_BAD_REQUEST } from "../constants/http.js";
+import type { AppEnv } from "../types/index.js";
 
 type ValidationTarget = "json" | "query" | "param";
 
-export function validate(schema: ZodType, target: ValidationTarget = "json"): (c: Context, next: Next) => Promise<void> {
-  return async (c: Context, next: Next): Promise<void> => {
+export function validate(schema: ZodType, target: ValidationTarget = "json"): (c: Context<AppEnv>, next: Next) => Promise<void> {
+  return async (c: Context<AppEnv>, next: Next): Promise<void> => {
     let data: unknown;
 
     if (target === "json") {

@@ -5,10 +5,10 @@ import { checkDatabaseConnection } from "./repositories/health.repository.js";
 import { successResponse } from "./helpers/response.js";
 import { HTTP_SERVICE_UNAVAILABLE } from "./constants/http.js";
 import { errorHandler } from "./middleware/errorHandler.js";
-import type { Variables } from "./types/index.js";
+import type { AppEnv } from "./types/index.js";
 import { authRoutes } from "./routes/auth.routes.js";
 
-const app = new Hono<{ Variables: Variables }>();
+const app = new Hono<AppEnv>();
 
 app.onError(errorHandler);
 

@@ -6,11 +6,14 @@ import { findUserByEmail, createUser } from "../repositories/user.repository.js"
 import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT } from "../constants/http.js";
 import type { RegisterInput, LoginInput } from "../validations/auth.schema.js";
 import type { JwtPayload } from "../types/index.js";
+import type { Prisma } from "../../generated/prisma/client.js";
+
+type UserWithoutPassword = Omit<Prisma.UserGetPayload<object>, "password">;
 
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = "24h";
 
-export async function register(input: RegisterInput): Promise<Omit<Awaited<ReturnType<typeof createUser>>, "password">> {
+export async function register(input: RegisterInput): Promise<UserWithoutPassword> {
   const existing = await findUserByEmail(input.email);
 
   if (existing) {
@@ -29,7 +32,7 @@ export async function register(input: RegisterInput): Promise<Omit<Awaited<Retur
   return userWithoutPassword;
 }
 
-export async function login(input: LoginInput): Promise<{ token: string; user: Omit<Awaited<ReturnType<typeof findUserByEmail & object>>, "password"> }> {
+export async function login(input: LoginInput): Promise<{ token: string; user: UserWithoutPassword }> {
   const user = await findUserByEmail(input.email);
 
   if (!user) {

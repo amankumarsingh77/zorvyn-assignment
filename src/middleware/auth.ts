@@ -1,13 +1,15 @@
-import type { Context, Next } from "hono";
+import type { Next } from "hono";
+import type { Context } from "hono";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { AppError } from "./errorHandler.js";
 import { HTTP_UNAUTHORIZED } from "../constants/http.js";
-import type { JwtPayload } from "../types/index.js";
+import { isJwtPayload } from "../types/index.js";
+import type { AppEnv } from "../types/index.js";
 
 const BEARER_PREFIX_LENGTH = 7;
 
-export async function authenticate(c: Context, next: Next): Promise<void> {
+export async function authenticate(c: Context<AppEnv>, next: Next): Promise<void> {
   const header = c.req.header("Authorization");
 
   if (!header || !header.startsWith("Bearer ")) {
@@ -17,10 +19,14 @@ export async function authenticate(c: Context, next: Next): Promise<void> {
   const token = header.slice(BEARER_PREFIX_LENGTH);
 
   try {
-    const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-    c.set("user", payload);
+    const decoded = jwt.verify(token, env.JWT_SECRET);
+    if (!isJwtPayload(decoded)) {
+      throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Invalid token payload");
+    }
+    c.set("user", decoded);
     await next();
-  } catch {
+  } catch (err) {
+    if (err instanceof AppError) throw err;
     throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Invalid or expired token");
   }
 }
