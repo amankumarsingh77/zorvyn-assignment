@@ -1,7 +1,12 @@
-interface PaginationMeta {
+interface PaginationInput {
   readonly page: number;
   readonly limit: number;
   readonly total: number;
+}
+
+interface PaginationMeta extends PaginationInput {
+  readonly totalPages: number;
+  readonly hasNextPage: boolean;
 }
 
 interface SuccessResponse<T> {
@@ -15,10 +20,19 @@ interface ErrorResponse {
   readonly error: { readonly code: string; readonly message: string };
 }
 
-export function successResponse<T>(data: T, meta?: PaginationMeta): SuccessResponse<T> {
-  return meta
-    ? { success: true, data, meta }
-    : { success: true, data };
+export function successResponse<T>(data: T, meta?: PaginationInput): SuccessResponse<T> {
+  if (!meta) return { success: true, data };
+
+  const totalPages = Math.ceil(meta.total / meta.limit);
+  return {
+    success: true,
+    data,
+    meta: {
+      ...meta,
+      totalPages,
+      hasNextPage: meta.page < totalPages,
+    },
+  };
 }
 
 export function errorResponse(code: string, message: string): ErrorResponse {

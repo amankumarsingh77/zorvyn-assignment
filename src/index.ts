@@ -15,11 +15,13 @@ const CORS_MAX_AGE = 3600;
 
 const app = new Hono<AppEnv>();
 
+const isWildcardOrigin = env.CORS_ORIGINS === "*";
+
 app.use("/*", cors({
-  origin: env.CORS_ORIGINS.split(","),
+  origin: isWildcardOrigin ? "*" : env.CORS_ORIGINS.split(","),
   allowMethods: ["GET", "POST", "PATCH", "DELETE"],
   allowHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  credentials: !isWildcardOrigin,
   maxAge: CORS_MAX_AGE,
 }));
 
