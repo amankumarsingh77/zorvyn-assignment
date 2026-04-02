@@ -1,7 +1,7 @@
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { Context } from "hono";
-import { errorResponse } from "../helpers/response.js";
-import { HTTP_INTERNAL_SERVER_ERROR } from "../constants/http.js";
+import { errorResponse } from "@/helpers/response.js";
+import { HTTP_INTERNAL_SERVER_ERROR } from "@/constants/http.js";
 
 export class AppError extends Error {
   constructor(

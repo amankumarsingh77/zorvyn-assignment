@@ -1,4 +1,4 @@
-import { prisma } from "../config/db.js";
+import { prisma } from "@/config/db.js";
 
 export async function checkDatabaseConnection(): Promise<boolean> {
   try {

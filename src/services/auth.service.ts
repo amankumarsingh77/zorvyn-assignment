@@ -1,12 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { env } from "../config/env.js";
-import { AppError } from "../middleware/errorHandler.js";
-import { findUserByEmail, findUserByEmailWithPassword, createUser } from "../repositories/user.repository.js";
-import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT } from "../constants/http.js";
-import type { RegisterInput, LoginInput } from "../validations/auth.schema.js";
-import type { JwtPayload } from "../types/index.js";
-import type { Role } from "../../generated/prisma/client.js";
+import { env } from "@/config/env.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { findUserByEmail, findUserByEmailWithPassword, createUser } from "@/repositories/user.repository.js";
+import { HTTP_UNAUTHORIZED, HTTP_FORBIDDEN, HTTP_CONFLICT } from "@/constants/http.js";
+import type { RegisterInput, LoginInput } from "@/validations/auth.schema.js";
+import type { JwtPayload } from "@/types/index.js";
+import type { Role } from "@generated/prisma/client.js";
 
 interface LoginUser {
   readonly id: string;

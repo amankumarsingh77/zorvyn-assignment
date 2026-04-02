@@ -10,7 +10,11 @@
     "resolveJsonModule": true,
     "declaration": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@generated/*": ["./generated/*"]
+    }
   },
   "include": ["src/**/*", "prisma/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist"]

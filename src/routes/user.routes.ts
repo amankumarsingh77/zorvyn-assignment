@@ -1,12 +1,12 @@
 import { Hono } from "hono";
-import { authenticate } from "../middleware/auth.js";
-import { requireRole } from "../middleware/roleGuard.js";
-import { validate } from "../middleware/validate.js";
-import { createUserSchema, updateUserSchema, listUsersQuerySchema } from "../validations/user.schema.js";
-import * as userService from "../services/user.service.js";
-import { successResponse } from "../helpers/response.js";
-import { HTTP_CREATED } from "../constants/http.js";
-import type { AppEnv } from "../types/index.js";
+import { authenticate } from "@/middleware/auth.js";
+import { requireRole } from "@/middleware/roleGuard.js";
+import { validate } from "@/middleware/validate.js";
+import { createUserSchema, updateUserSchema, listUsersQuerySchema } from "@/validations/user.schema.js";
+import * as userService from "@/services/user.service.js";
+import { successResponse } from "@/helpers/response.js";
+import { HTTP_CREATED } from "@/constants/http.js";
+import type { AppEnv } from "@/types/index.js";
 
 const userRoutes = new Hono<AppEnv>();
 

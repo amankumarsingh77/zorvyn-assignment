@@ -1,8 +1,8 @@
 import type { Context, Next } from "hono";
 import type { ZodType } from "zod";
-import { AppError } from "./errorHandler.js";
-import { HTTP_BAD_REQUEST } from "../constants/http.js";
-import type { AppEnv } from "../types/index.js";
+import { AppError } from "@/middleware/errorHandler.js";
+import { HTTP_BAD_REQUEST } from "@/constants/http.js";
+import type { AppEnv } from "@/types/index.js";
 
 type ValidationTarget = "json" | "query" | "param";
 

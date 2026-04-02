@@ -1,12 +1,12 @@
 import { Hono } from "hono";
-import { authenticate } from "../middleware/auth.js";
-import { requireRole } from "../middleware/roleGuard.js";
-import { validate } from "../middleware/validate.js";
-import { createRecordSchema, updateRecordSchema, listRecordsQuerySchema } from "../validations/record.schema.js";
-import * as recordService from "../services/record.service.js";
-import { successResponse } from "../helpers/response.js";
-import { HTTP_CREATED } from "../constants/http.js";
-import type { AppEnv } from "../types/index.js";
+import { authenticate } from "@/middleware/auth.js";
+import { requireRole } from "@/middleware/roleGuard.js";
+import { validate } from "@/middleware/validate.js";
+import { createRecordSchema, updateRecordSchema, listRecordsQuerySchema } from "@/validations/record.schema.js";
+import * as recordService from "@/services/record.service.js";
+import { successResponse } from "@/helpers/response.js";
+import { HTTP_CREATED } from "@/constants/http.js";
+import type { AppEnv } from "@/types/index.js";
 
 const recordRoutes = new Hono<AppEnv>();
 

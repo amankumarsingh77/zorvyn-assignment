@@ -1,5 +1,5 @@
-import { prisma } from "../config/db.js";
-import type { Prisma } from "../../generated/prisma/client.js";
+import { prisma } from "@/config/db.js";
+import type { Prisma } from "@generated/prisma/client.js";
 
 const recordSelectWithCreator = {
   id: true,
