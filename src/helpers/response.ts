@@ -4,8 +4,19 @@ type PaginationMeta = {
   total: number;
 };
 
-export function successResponse<T>(data: T, meta?: PaginationMeta) {
-  const response: { success: true; data: T; meta?: PaginationMeta } = {
+interface SuccessResponse<T> {
+  success: true;
+  data: T;
+  meta?: PaginationMeta;
+}
+
+interface ErrorResponse {
+  success: false;
+  error: { code: string; message: string };
+}
+
+export function successResponse<T>(data: T, meta?: PaginationMeta): SuccessResponse<T> {
+  const response: SuccessResponse<T> = {
     success: true,
     data,
   };
@@ -15,7 +26,7 @@ export function successResponse<T>(data: T, meta?: PaginationMeta) {
   return response;
 }
 
-export function errorResponse(code: string, message: string) {
+export function errorResponse(code: string, message: string): ErrorResponse {
   return {
     success: false,
     error: { code, message },
