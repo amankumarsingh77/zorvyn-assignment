@@ -11,6 +11,7 @@ import type { AppEnv } from "@/types/index.js";
 import { authRoutes } from "@/routes/auth.routes.js";
 import { userRoutes } from "@/routes/user.routes.js";
 import { recordRoutes } from "@/routes/record.routes.js";
+import { dashboardRoutes } from "@/routes/dashboard.routes.js";
 
 const CORS_MAX_AGE = 3600;
 
@@ -39,6 +40,7 @@ app.get("/health", async (c) => {
 app.route("/auth", authRoutes);
 app.route("/users", userRoutes);
 app.route("/records", recordRoutes);
+app.route("/dashboard", dashboardRoutes);
 
 connectDatabase().then(() => {
   serve({ fetch: app.fetch, port: env.PORT }, (info) => {
