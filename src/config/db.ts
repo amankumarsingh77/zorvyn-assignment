@@ -7,7 +7,7 @@ export const prisma = new PrismaClient({ adapter });
 
 export async function connectDatabase(): Promise<void> {
   try {
-    await prisma.$queryRawUnsafe("SELECT 1");
+    await prisma.$queryRaw`SELECT 1`;
     console.info("Database connection established");
   } catch (error: unknown) {
     const message =
