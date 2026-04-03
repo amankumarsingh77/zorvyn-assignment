@@ -3,6 +3,7 @@ import { authenticate } from "@/middleware/auth.js";
 import { requireRole } from "@/middleware/roleGuard.js";
 import { validate } from "@/middleware/validate.js";
 import { createRecordSchema, updateRecordSchema, listRecordsQuerySchema } from "@/validations/record.schema.js";
+import { idParamSchema } from "@/validations/user.schema.js";
 import * as recordService from "@/services/record.service.js";
 import { successResponse } from "@/helpers/response.js";
 import { HTTP_CREATED } from "@/constants/http.js";
@@ -19,8 +20,9 @@ recordRoutes.get("/", validate(listRecordsQuerySchema, "query"), async (c) => {
   return c.json(successResponse(result.records, { page: result.page, limit: result.limit, total: result.total }));
 });
 
-recordRoutes.get("/:id", async (c) => {
-  const record = await recordService.getRecordById(c.req.param("id"));
+recordRoutes.get("/:id", validate(idParamSchema, "param"), async (c) => {
+  const { id } = c.req.param();
+  const record = await recordService.getRecordById(id);
   return c.json(successResponse(record));
 });
 
@@ -30,14 +32,14 @@ recordRoutes.post("/", requireRole("ADMIN"), validate(createRecordSchema), async
   return c.json(successResponse(record), HTTP_CREATED);
 });
 
-recordRoutes.patch("/:id", requireRole("ADMIN"), validate(updateRecordSchema), async (c) => {
+recordRoutes.patch("/:id", requireRole("ADMIN"), validate(idParamSchema, "param"), validate(updateRecordSchema), async (c) => {
   const { id } = c.req.param();
   const input = c.get("validated") as UpdateRecordInput;
   const record = await recordService.updateRecord(id, input);
   return c.json(successResponse(record));
 });
 
-recordRoutes.delete("/:id", requireRole("ADMIN"), async (c) => {
+recordRoutes.delete("/:id", requireRole("ADMIN"), validate(idParamSchema, "param"), async (c) => {
   const { id } = c.req.param();
   await recordService.deleteRecord(id);
   return c.json(successResponse(null));

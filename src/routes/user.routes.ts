@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { authenticate } from "@/middleware/auth.js";
 import { requireRole } from "@/middleware/roleGuard.js";
 import { validate } from "@/middleware/validate.js";
-import { createUserSchema, updateUserSchema, listUsersQuerySchema } from "@/validations/user.schema.js";
+import { createUserSchema, updateUserSchema, listUsersQuerySchema, idParamSchema } from "@/validations/user.schema.js";
 import * as userService from "@/services/user.service.js";
 import { successResponse } from "@/helpers/response.js";
 import { HTTP_CREATED } from "@/constants/http.js";
@@ -25,20 +25,22 @@ userRoutes.post("/", validate(createUserSchema), async (c) => {
   return c.json(successResponse(user), HTTP_CREATED);
 });
 
-userRoutes.get("/:id", async (c) => {
-  const user = await userService.getUserById(c.req.param("id"));
+userRoutes.get("/:id", validate(idParamSchema, "param"), async (c) => {
+  const { id } = c.req.param();
+  const user = await userService.getUserById(id);
   return c.json(successResponse(user));
 });
 
-userRoutes.patch("/:id", validate(updateUserSchema), async (c) => {
+userRoutes.patch("/:id", validate(idParamSchema, "param"), validate(updateUserSchema), async (c) => {
   const { id } = c.req.param();
   const input = c.get("validated") as UpdateUserInput;
   const user = await userService.updateUser(id, input);
   return c.json(successResponse(user));
 });
 
-userRoutes.delete("/:id", async (c) => {
-  await userService.deleteUser(c.req.param("id"));
+userRoutes.delete("/:id", validate(idParamSchema, "param"), async (c) => {
+  const { id } = c.req.param();
+  await userService.deleteUser(id);
   return c.json(successResponse(null));
 });
 
