@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
 import { env } from "@/config/env.js";
+import { connectDatabase } from "@/config/db.js";
 import { checkDatabaseConnection } from "@/repositories/health.repository.js";
 import { successResponse } from "@/helpers/response.js";
 import { HTTP_SERVICE_UNAVAILABLE } from "@/constants/http.js";
@@ -39,8 +40,13 @@ app.route("/auth", authRoutes);
 app.route("/users", userRoutes);
 app.route("/records", recordRoutes);
 
-serve({ fetch: app.fetch, port: env.PORT }, (info) => {
-  console.info(`Server running on http://localhost:${info.port}`);
+connectDatabase().then(() => {
+  serve({ fetch: app.fetch, port: env.PORT }, (info) => {
+    console.info(`Server running on http://localhost:${info.port}`);
+  });
+}).catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
 });
 
 export { app };
