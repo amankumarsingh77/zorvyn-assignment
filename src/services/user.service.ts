@@ -13,7 +13,9 @@ import {
 } from "@/repositories/user.repository.js";
 import type { CreateUserInput, UpdateUserInput, ListUsersQuery } from "@/validations/user.schema.js";
 
-type UserWithoutPassword = Awaited<ReturnType<typeof findUserById>> & {};
+const SALT_ROUNDS = 10;
+
+type UserWithoutPassword = NonNullable<Awaited<ReturnType<typeof findUserById>>>;
 
 interface ListUsersResult {
   readonly users: UserWithoutPassword[];
@@ -21,8 +23,6 @@ interface ListUsersResult {
   readonly page: number;
   readonly limit: number;
 }
-
-const SALT_ROUNDS = 10;
 
 export async function listUsers(query: ListUsersQuery): Promise<ListUsersResult> {
   const skip = (query.page - 1) * query.limit;

@@ -63,7 +63,7 @@ export async function createUserWithRole(data: {
   });
 }
 
-export async function updateUserById(id: string, data: Prisma.UserUpdateInput): Promise<UserWithoutPassword> {
+export async function updateUserById(id: string, data: Pick<Prisma.UserUpdateInput, "name" | "role" | "status">): Promise<UserWithoutPassword> {
   return prisma.user.update({
     where: { id },
     data,

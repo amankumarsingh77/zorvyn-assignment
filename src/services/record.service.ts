@@ -11,7 +11,7 @@ import {
 } from "@/repositories/record.repository.js";
 import type { CreateRecordInput, UpdateRecordInput, ListRecordsQuery } from "@/validations/record.schema.js";
 
-type RecordWithCreator = Awaited<ReturnType<typeof findRecordById>> & {};
+type RecordWithCreator = NonNullable<Awaited<ReturnType<typeof findRecordById>>>;
 
 interface ListRecordsResult {
   readonly records: RecordWithCreator[];
@@ -29,11 +29,11 @@ export async function listRecords(query: ListRecordsQuery): Promise<ListRecordsR
   if (query.category) {
     where.category = query.category;
   }
-  if (query.startDate) {
-    where.date = { ...where.date as object, gte: new Date(query.startDate) };
-  }
-  if (query.endDate) {
-    where.date = { ...where.date as object, lte: new Date(query.endDate) };
+  if (query.startDate || query.endDate) {
+    const dateFilter: Prisma.DateTimeFilter = {};
+    if (query.startDate) dateFilter.gte = new Date(query.startDate);
+    if (query.endDate) dateFilter.lte = new Date(query.endDate);
+    where.date = dateFilter;
   }
 
   const skip = (query.page - 1) * query.limit;

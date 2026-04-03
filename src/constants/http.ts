@@ -1,4 +1,3 @@
-export const HTTP_OK = 200 as const;
 export const HTTP_CREATED = 201 as const;
 export const HTTP_BAD_REQUEST = 400 as const;
 export const HTTP_UNAUTHORIZED = 401 as const;

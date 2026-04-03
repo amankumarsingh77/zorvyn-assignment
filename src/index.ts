@@ -4,7 +4,7 @@ import { serve } from "@hono/node-server";
 import { env } from "@/config/env.js";
 import { connectDatabase } from "@/config/db.js";
 import { checkDatabaseConnection } from "@/repositories/health.repository.js";
-import { successResponse } from "@/helpers/response.js";
+import { successResponse, errorResponse } from "@/helpers/response.js";
 import { HTTP_SERVICE_UNAVAILABLE } from "@/constants/http.js";
 import { errorHandler } from "@/middleware/errorHandler.js";
 import type { AppEnv } from "@/types/index.js";
@@ -33,7 +33,7 @@ app.get("/health", async (c) => {
   if (isConnected) {
     return c.json(successResponse({ status: "healthy", database: "connected" }));
   }
-  return c.json(successResponse({ status: "unhealthy", database: "disconnected" }), HTTP_SERVICE_UNAVAILABLE);
+  return c.json(errorResponse("SERVICE_UNAVAILABLE", "Database connection failed"), HTTP_SERVICE_UNAVAILABLE);
 });
 
 app.route("/auth", authRoutes);
