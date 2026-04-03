@@ -151,8 +151,8 @@ describe("getMonthlyTrends", () => {
     const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     mockQueryMonthlyTrends.mockResolvedValueOnce([
-      { month: currentMonth, type: "INCOME", total: mockDecimal(4000) },
-      { month: currentMonth, type: "EXPENSE", total: mockDecimal(2000) },
+      { month: currentMonth, type: "INCOME", total: "4000" },
+      { month: currentMonth, type: "EXPENSE", total: "2000" },
     ]);
 
     const result = await getMonthlyTrends();

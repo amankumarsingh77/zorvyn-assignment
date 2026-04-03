@@ -91,9 +91,9 @@ export async function getMonthlyTrends(): Promise<readonly MonthlyTrendItem[]> {
     const entry = dataMap.get(key) ?? { income: 0, expense: 0 };
 
     if (row.type === "INCOME") {
-      entry.income = row.total.toNumber();
+      entry.income = Number(row.total);
     } else {
-      entry.expense = row.total.toNumber();
+      entry.expense = Number(row.total);
     }
 
     dataMap.set(key, entry);

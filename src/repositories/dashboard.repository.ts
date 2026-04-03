@@ -9,7 +9,7 @@ interface DateFilter {
 export interface MonthlyTrendRow {
   month: Date;
   type: string;
-  total: Prisma.Decimal;
+  total: string;
 }
 
 function buildDateWhere(dateFilter?: DateFilter): Prisma.RecordWhereInput {
