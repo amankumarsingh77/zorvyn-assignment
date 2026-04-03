@@ -14,7 +14,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "infra:up": "podman-compose up -d",
+    "infra:down": "podman-compose down"
   },
   "keywords": [],
   "author": "",
