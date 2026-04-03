@@ -7,13 +7,14 @@ import * as recordService from "@/services/record.service.js";
 import { successResponse } from "@/helpers/response.js";
 import { HTTP_CREATED } from "@/constants/http.js";
 import type { AppEnv } from "@/types/index.js";
+import type { CreateRecordInput, UpdateRecordInput, ListRecordsQuery } from "@/validations/record.schema.js";
 
 const recordRoutes = new Hono<AppEnv>();
 
 recordRoutes.use("*", authenticate);
 
 recordRoutes.get("/", validate(listRecordsQuerySchema, "query"), async (c) => {
-  const query = listRecordsQuerySchema.parse(c.get("validated"));
+  const query = c.get("validated") as ListRecordsQuery;
   const result = await recordService.listRecords(query);
   return c.json(successResponse(result.records, { page: result.page, limit: result.limit, total: result.total }));
 });
@@ -24,14 +25,14 @@ recordRoutes.get("/:id", async (c) => {
 });
 
 recordRoutes.post("/", requireRole("ADMIN"), validate(createRecordSchema), async (c) => {
-  const input = createRecordSchema.parse(c.get("validated"));
+  const input = c.get("validated") as CreateRecordInput;
   const record = await recordService.createRecord(input, c.var.user.userId);
   return c.json(successResponse(record), HTTP_CREATED);
 });
 
 recordRoutes.patch("/:id", requireRole("ADMIN"), validate(updateRecordSchema), async (c) => {
   const { id } = c.req.param();
-  const input = updateRecordSchema.parse(c.get("validated"));
+  const input = c.get("validated") as UpdateRecordInput;
   const record = await recordService.updateRecord(id, input);
   return c.json(successResponse(record));
 });

@@ -7,19 +7,20 @@ import * as userService from "@/services/user.service.js";
 import { successResponse } from "@/helpers/response.js";
 import { HTTP_CREATED } from "@/constants/http.js";
 import type { AppEnv } from "@/types/index.js";
+import type { CreateUserInput, UpdateUserInput, ListUsersQuery } from "@/validations/user.schema.js";
 
 const userRoutes = new Hono<AppEnv>();
 
 userRoutes.use("*", authenticate, requireRole("ADMIN"));
 
 userRoutes.get("/", validate(listUsersQuerySchema, "query"), async (c) => {
-  const query = listUsersQuerySchema.parse(c.get("validated"));
+  const query = c.get("validated") as ListUsersQuery;
   const result = await userService.listUsers(query);
   return c.json(successResponse(result.users, { page: result.page, limit: result.limit, total: result.total }));
 });
 
 userRoutes.post("/", validate(createUserSchema), async (c) => {
-  const input = createUserSchema.parse(c.get("validated"));
+  const input = c.get("validated") as CreateUserInput;
   const user = await userService.createUser(input);
   return c.json(successResponse(user), HTTP_CREATED);
 });
@@ -31,7 +32,7 @@ userRoutes.get("/:id", async (c) => {
 
 userRoutes.patch("/:id", validate(updateUserSchema), async (c) => {
   const { id } = c.req.param();
-  const input = updateUserSchema.parse(c.get("validated"));
+  const input = c.get("validated") as UpdateUserInput;
   const user = await userService.updateUser(id, input);
   return c.json(successResponse(user));
 });
