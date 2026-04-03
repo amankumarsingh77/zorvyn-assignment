@@ -11,6 +11,7 @@
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": ["./src/*"],
       "@generated/*": ["./generated/*"]
