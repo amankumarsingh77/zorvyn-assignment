@@ -6,10 +6,11 @@ config();
 const DEFAULT_PORT = 3000;
 
 const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(10),
   PORT: z.coerce.number().default(DEFAULT_PORT),
   CORS_ORIGINS: z.string().default("http://localhost:5173"),
+  JWT_EXPIRY: z.string().default("24h"),
 });
 
 const parsed = envSchema.safeParse(process.env);

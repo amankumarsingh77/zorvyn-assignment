@@ -8,15 +8,14 @@ import type { RegisterInput, LoginInput } from "@/validations/auth.schema.js";
 import type { JwtPayload } from "@/types/index.js";
 import type { Role } from "@generated/prisma/client.js";
 
+const SALT_ROUNDS = 10;
+
 interface LoginUser {
   readonly id: string;
   readonly email: string;
   readonly name: string;
   readonly role: Role;
 }
-
-const SALT_ROUNDS = 10;
-const TOKEN_EXPIRY = "24h";
 
 export async function register(input: RegisterInput): Promise<{
   readonly id: string;
@@ -64,7 +63,7 @@ export async function login(input: LoginInput): Promise<{ token: string; user: L
     role: user.role,
   };
 
-  const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+  const token = jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRY as jwt.SignOptions["expiresIn"] });
 
   return {
     token,
