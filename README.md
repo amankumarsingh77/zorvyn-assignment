@@ -330,6 +330,41 @@ Income and expense totals over time. Supports monthly (default) and weekly granu
 }
 ```
 
+### Audit Logs
+
+Audit log endpoints require ADMIN role. Record create, update, and delete operations are automatically logged.
+
+#### `GET /audit-logs`
+
+List audit logs with pagination and filtering. ADMIN only.
+
+**Query parameters:** `?page=1&limit=20&entityId=<uuid>&userId=<uuid>&action=CREATE&startDate=2026-01-01T00:00:00Z&endDate=2026-12-31T23:59:59Z`
+
+All query parameters are optional. Action must be one of: `CREATE`, `UPDATE`, `DELETE`.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "action": "CREATE",
+      "entity": "Record",
+      "entityId": "uuid",
+      "userId": "uuid",
+      "changes": { "amount": 1500.50, "type": "INCOME", "category": "salary" },
+      "createdAt": "2026-04-01T00:00:00.000Z",
+      "user": { "id": "uuid", "name": "Admin User", "email": "admin@example.com" }
+    }
+  ],
+  "meta": { "page": 1, "limit": 20, "total": 42 }
+}
+```
+
+---
+
 ## Access Control
 
 | Endpoint              | VIEWER | ANALYST | ADMIN |
@@ -348,6 +383,7 @@ Income and expense totals over time. Supports monthly (default) and weekly granu
 | `PATCH /users/:id`    | No     | No      | Yes   |
 | `DELETE /users/:id`   | No     | No      | Yes   |
 | `GET /dashboard/*`    | No     | Yes     | Yes   |
+| `GET /audit-logs`     | No     | No      | Yes   |
 
 ## Error Responses
 
@@ -392,16 +428,19 @@ src/
 │   ├── roleGuard.ts        — Role-based access control
 │   └── validate.ts         — Zod schema validation middleware
 ├── repositories/
+│   ├── audit.repository.ts    — Audit log queries
 │   ├── dashboard.repository.ts — Aggregation queries for analytics
 │   ├── health.repository.ts    — Database health check
 │   ├── record.repository.ts    — Financial record CRUD queries
 │   └── user.repository.ts      — User CRUD queries
 ├── routes/
+│   ├── audit.routes.ts     — Audit log listing (admin)
 │   ├── auth.routes.ts      — Registration and login
 │   ├── dashboard.routes.ts — Summary, trends, category breakdown
 │   ├── record.routes.ts    — Financial record CRUD
 │   └── user.routes.ts      — User management (admin)
 ├── services/
+│   ├── audit.service.ts    — Audit log business logic
 │   ├── auth.service.ts     — Auth business logic
 │   ├── dashboard.service.ts — Analytics computation
 │   ├── record.service.ts   — Record business logic
@@ -409,12 +448,13 @@ src/
 ├── types/
 │   └── index.ts            — JwtPayload, Variables, AppError
 └── validations/
+    ├── audit.schema.ts     — Audit log query schemas
     ├── auth.schema.ts      — Register/login schemas
     ├── dashboard.schema.ts — Dashboard query schemas
     ├── record.schema.ts    — Record CRUD schemas
     └── user.schema.ts      — User CRUD schemas
 prisma/
-├── schema.prisma           — User and Record models
+├── schema.prisma           — User, Record, and AuditLog models
 ├── seed.ts                 — Sample data seeder
 └── migrations/             — Database migrations
 ```

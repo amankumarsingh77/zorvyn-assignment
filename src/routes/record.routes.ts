@@ -35,13 +35,13 @@ recordRoutes.post("/", requireRole("ADMIN"), validate(createRecordSchema), async
 recordRoutes.patch("/:id", requireRole("ADMIN"), validate(idParamSchema, "param"), validate(updateRecordSchema), async (c) => {
   const { id } = c.req.param();
   const input = c.get("validated") as UpdateRecordInput;
-  const record = await recordService.updateRecord(id, input);
+  const record = await recordService.updateRecord(id, input, c.var.user.userId);
   return c.json(successResponse(record));
 });
 
 recordRoutes.delete("/:id", requireRole("ADMIN"), validate(idParamSchema, "param"), async (c) => {
   const { id } = c.req.param();
-  await recordService.deleteRecord(id);
+  await recordService.deleteRecord(id, c.var.user.userId);
   return c.json(successResponse(null));
 });
 
