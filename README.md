@@ -302,9 +302,11 @@ The 10 most recent financial records, including `creator: { id, name }`.
 
 #### `GET /dashboard/trends`
 
-Monthly income and expense totals for the last 12 months.
+Income and expense totals over time. Supports monthly (default) and weekly granularity.
 
-**Response:**
+**Query parameters:** `?granularity=monthly` or `?granularity=weekly`
+
+**Monthly response** (default, last 12 months):
 
 ```json
 {
@@ -312,6 +314,18 @@ Monthly income and expense totals for the last 12 months.
   "data": [
     { "month": "2025-05", "income": 5000.00, "expense": 1200.50 },
     { "month": "2025-06", "income": 4800.00, "expense": 1350.00 }
+  ]
+}
+```
+
+**Weekly response** (last 12 weeks, keyed by week start date):
+
+```json
+{
+  "success": true,
+  "data": [
+    { "week": "2025-05-26", "income": 1250.00, "expense": 300.00 },
+    { "week": "2025-06-02", "income": 1200.00, "expense": 337.50 }
   ]
 }
 ```

@@ -69,3 +69,18 @@ export async function queryMonthlyTrends(sinceDate: Date): Promise<MonthlyTrendR
     GROUP BY date_trunc('month', date), type
     ORDER BY month ASC`;
 }
+
+export interface WeeklyTrendRow {
+  week: Date;
+  type: string;
+  total: string;
+}
+
+export async function queryWeeklyTrends(sinceDate: Date): Promise<WeeklyTrendRow[]> {
+  return prisma.$queryRaw<WeeklyTrendRow[]>`
+    SELECT date_trunc('week', date) AS week, type, SUM(amount) AS total
+    FROM records
+    WHERE date >= ${sinceDate}
+    GROUP BY date_trunc('week', date), type
+    ORDER BY week ASC`;
+}

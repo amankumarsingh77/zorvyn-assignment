@@ -6,3 +6,9 @@ export const dashboardQuerySchema = z.object({
 });
 
 export type DashboardQuery = z.infer<typeof dashboardQuerySchema>;
+
+export const trendsQuerySchema = z.object({
+  granularity: z.enum(["monthly", "weekly"]).default("monthly"),
+});
+
+export type TrendsQuery = z.infer<typeof trendsQuerySchema>;

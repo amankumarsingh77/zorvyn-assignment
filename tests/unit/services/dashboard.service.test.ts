@@ -5,11 +5,13 @@ const {
   mockGroupByCategoryAndType,
   mockFindRecentWithCreator,
   mockQueryMonthlyTrends,
+  mockQueryWeeklyTrends,
 } = vi.hoisted(() => ({
   mockAggregateAmountByType: vi.fn(),
   mockGroupByCategoryAndType: vi.fn(),
   mockFindRecentWithCreator: vi.fn(),
   mockQueryMonthlyTrends: vi.fn(),
+  mockQueryWeeklyTrends: vi.fn(),
 }));
 
 vi.mock("@/repositories/dashboard.repository.js", () => ({
@@ -17,6 +19,7 @@ vi.mock("@/repositories/dashboard.repository.js", () => ({
   groupByCategoryAndType: mockGroupByCategoryAndType,
   findRecentWithCreator: mockFindRecentWithCreator,
   queryMonthlyTrends: mockQueryMonthlyTrends,
+  queryWeeklyTrends: mockQueryWeeklyTrends,
 }));
 
 import {
@@ -24,6 +27,8 @@ import {
   getCategorySummary,
   getRecentActivity,
   getMonthlyTrends,
+  getWeeklyTrends,
+  getTrends,
 } from "@/services/dashboard.service.js";
 
 function mockDecimal(value: number) {
@@ -191,5 +196,83 @@ describe("getMonthlyTrends", () => {
     for (let i = 1; i < result.length; i++) {
       expect(result[i].month > result[i - 1].month).toBe(true);
     }
+  });
+});
+
+describe("getWeeklyTrends", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("transforms raw SQL rows into week/income/expense format", async () => {
+    const now = new Date();
+    // Get Monday of current week
+    const dayOfWeek = now.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const currentWeekMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysToMonday);
+
+    mockQueryWeeklyTrends.mockResolvedValueOnce([
+      { week: currentWeekMonday, type: "INCOME", total: "3000" },
+      { week: currentWeekMonday, type: "EXPENSE", total: "1000" },
+    ]);
+
+    const result = await getWeeklyTrends();
+
+    const expectedKey = `${currentWeekMonday.getFullYear()}-${String(currentWeekMonday.getMonth() + 1).padStart(2, "0")}-${String(currentWeekMonday.getDate()).padStart(2, "0")}`;
+    const currentEntry = result.find((r) => r.week === expectedKey);
+
+    expect(currentEntry).toEqual({
+      week: expectedKey,
+      income: 3000,
+      expense: 1000,
+    });
+  });
+
+  it("fills weeks with no data as 0", async () => {
+    mockQueryWeeklyTrends.mockResolvedValueOnce([]);
+
+    const result = await getWeeklyTrends();
+
+    for (const entry of result) {
+      expect(entry.income).toBe(0);
+      expect(entry.expense).toBe(0);
+    }
+  });
+
+  it("returns approximately 12 weeks ordered ascending", async () => {
+    mockQueryWeeklyTrends.mockResolvedValueOnce([]);
+
+    const result = await getWeeklyTrends();
+
+    expect(result.length).toBeGreaterThanOrEqual(12);
+    expect(result.length).toBeLessThanOrEqual(14);
+
+    for (let i = 1; i < result.length; i++) {
+      expect(result[i].week > result[i - 1].week).toBe(true);
+    }
+  });
+});
+
+describe("getTrends", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("delegates to getMonthlyTrends when granularity is monthly", async () => {
+    mockQueryMonthlyTrends.mockResolvedValueOnce([]);
+
+    await getTrends({ granularity: "monthly" });
+
+    expect(mockQueryMonthlyTrends).toHaveBeenCalled();
+    expect(mockQueryWeeklyTrends).not.toHaveBeenCalled();
+  });
+
+  it("delegates to getWeeklyTrends when granularity is weekly", async () => {
+    mockQueryWeeklyTrends.mockResolvedValueOnce([]);
+
+    await getTrends({ granularity: "weekly" });
+
+    expect(mockQueryWeeklyTrends).toHaveBeenCalled();
+    expect(mockQueryMonthlyTrends).not.toHaveBeenCalled();
   });
 });

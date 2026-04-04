@@ -135,7 +135,7 @@ describe("GET /dashboard/recent-activity", () => {
 });
 
 describe("GET /dashboard/trends", () => {
-  it("ANALYST gets 200 with data array", async () => {
+  it("ANALYST gets 200 with monthly data by default", async () => {
     const res = await app.request("/dashboard/trends", {
       headers: { Authorization: `Bearer ${analystToken}` },
     });
@@ -144,6 +144,37 @@ describe("GET /dashboard/trends", () => {
     const body = await res.json();
     expect(body.success).toBe(true);
     expect(Array.isArray(body.data)).toBe(true);
+    if (body.data.length > 0) {
+      expect(body.data[0]).toHaveProperty("month");
+    }
+  });
+
+  it("ANALYST gets 200 with weekly data when granularity=weekly", async () => {
+    const res = await app.request("/dashboard/trends?granularity=weekly", {
+      headers: { Authorization: `Bearer ${analystToken}` },
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(Array.isArray(body.data)).toBe(true);
+    if (body.data.length > 0) {
+      expect(body.data[0]).toHaveProperty("week");
+    }
+  });
+
+  it("ANALYST gets 200 with monthly data when granularity=monthly", async () => {
+    const res = await app.request("/dashboard/trends?granularity=monthly", {
+      headers: { Authorization: `Bearer ${analystToken}` },
+    });
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(Array.isArray(body.data)).toBe(true);
+    if (body.data.length > 0) {
+      expect(body.data[0]).toHaveProperty("month");
+    }
   });
 });
 

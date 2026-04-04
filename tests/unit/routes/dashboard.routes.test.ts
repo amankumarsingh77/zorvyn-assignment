@@ -2,18 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import type { AppEnv } from "@/types/index.js";
 
-const { mockGetSummary, mockGetCategorySummary, mockGetRecentActivity, mockGetMonthlyTrends } = vi.hoisted(() => ({
+const { mockGetSummary, mockGetCategorySummary, mockGetRecentActivity, mockGetTrends } = vi.hoisted(() => ({
   mockGetSummary: vi.fn(),
   mockGetCategorySummary: vi.fn(),
   mockGetRecentActivity: vi.fn(),
-  mockGetMonthlyTrends: vi.fn(),
+  mockGetTrends: vi.fn(),
 }));
 
 vi.mock("@/services/dashboard.service.js", () => ({
   getSummary: mockGetSummary,
   getCategorySummary: mockGetCategorySummary,
   getRecentActivity: mockGetRecentActivity,
-  getMonthlyTrends: mockGetMonthlyTrends,
+  getTrends: mockGetTrends,
 }));
 
 vi.mock("@/middleware/auth.js", () => ({
@@ -146,7 +146,7 @@ describe("GET /dashboard/recent-activity", () => {
 });
 
 describe("GET /dashboard/trends", () => {
-  it("returns 200 with trends data for ADMIN", async () => {
+  it("returns 200 with monthly trends by default for ADMIN", async () => {
     mockAuthenticate.mockImplementationOnce(async (c, next) => {
       c.set("user", { userId: "test-user-id", role: "ADMIN" });
       await next();
@@ -156,7 +156,7 @@ describe("GET /dashboard/trends", () => {
       { month: "2025-01", income: 5000, expense: 3000 },
       { month: "2025-02", income: 5500, expense: 2800 },
     ];
-    mockGetMonthlyTrends.mockResolvedValueOnce(trendsData);
+    mockGetTrends.mockResolvedValueOnce(trendsData);
 
     const app = createApp();
     const res = await app.request("/dashboard/trends");
@@ -164,7 +164,22 @@ describe("GET /dashboard/trends", () => {
 
     expect(res.status).toBe(200);
     expect(body).toEqual({ success: true, data: trendsData });
-    expect(mockGetMonthlyTrends).toHaveBeenCalledOnce();
+    expect(mockGetTrends).toHaveBeenCalledWith({ granularity: "monthly" });
+  });
+
+  it("passes weekly granularity to service", async () => {
+    const weeklyData = [
+      { week: "2025-06-02", income: 1200, expense: 300 },
+    ];
+    mockGetTrends.mockResolvedValueOnce(weeklyData);
+
+    const app = createApp();
+    const res = await app.request("/dashboard/trends?granularity=weekly");
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({ success: true, data: weeklyData });
+    expect(mockGetTrends).toHaveBeenCalledWith({ granularity: "weekly" });
   });
 
   it("returns 403 for VIEWER", async () => {
