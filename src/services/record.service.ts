@@ -57,10 +57,10 @@ export async function createRecord(input: CreateRecordInput, userId: string): Pr
     date: new Date(input.date),
     notes: input.notes,
     creator: { connect: { id: userId } },
-  });
+  }, userId);
 }
 
-export async function updateRecord(id: string, input: UpdateRecordInput): Promise<RecordWithCreator> {
+export async function updateRecord(id: string, input: UpdateRecordInput, userId: string): Promise<RecordWithCreator> {
   const existing = await findRecordById(id);
   if (!existing) {
     throw new AppError(HTTP_NOT_FOUND, "NOT_FOUND", "Record not found");
@@ -84,13 +84,13 @@ export async function updateRecord(id: string, input: UpdateRecordInput): Promis
     data.notes = input.notes;
   }
 
-  return updateRecordById(id, data);
+  return updateRecordById(id, data, userId);
 }
 
-export async function deleteRecord(id: string): Promise<void> {
+export async function deleteRecord(id: string, userId: string): Promise<void> {
   const existing = await findRecordById(id);
   if (!existing) {
     throw new AppError(HTTP_NOT_FOUND, "NOT_FOUND", "Record not found");
   }
-  await deleteRecordById(id);
+  await deleteRecordById(id, userId);
 }
