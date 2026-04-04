@@ -13,7 +13,7 @@ const BEARER_PREFIX_LENGTH = 7;
 export async function authenticate(c: Context<AppEnv>, next: Next): Promise<void> {
   const header = c.req.header("Authorization");
 
-  if (!header || !header.startsWith("Bearer ")) {
+  if (!header?.startsWith("Bearer ")) {
     throw new AppError(HTTP_UNAUTHORIZED, "UNAUTHORIZED", "Missing or invalid authorization header");
   }
 

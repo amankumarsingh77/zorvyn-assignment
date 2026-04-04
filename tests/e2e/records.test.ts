@@ -8,7 +8,6 @@ const viewerEmail = `${TEST_PREFIX}-viewer@example.com`;
 
 let adminToken: string;
 let viewerToken: string;
-let adminUserId: string;
 const createdRecordIds: string[] = [];
 
 async function getAuthToken(email: string, password: string): Promise<string> {
@@ -26,7 +25,7 @@ beforeAll(async () => {
 
   // Create admin user directly via prisma
   const hashedPassword = await bcrypt.hash("password123", 10);
-  const adminUser = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email: adminEmail,
       password: hashedPassword,
@@ -34,7 +33,6 @@ beforeAll(async () => {
       role: "ADMIN",
     },
   });
-  adminUserId = adminUser.id;
 
   // Create viewer user via API
   await app.request("/auth/register", {
