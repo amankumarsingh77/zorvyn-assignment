@@ -12,6 +12,6 @@ export async function connectDatabase(): Promise<void> {
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Unknown error";
-    throw new Error(`Failed to connect to database: ${message}`);
+    throw new Error(`Failed to connect to database: ${message}`, { cause: error });
   }
 }
