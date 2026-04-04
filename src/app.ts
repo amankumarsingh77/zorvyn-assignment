@@ -10,6 +10,7 @@ import { authRoutes } from "@/routes/auth.routes.js";
 import { userRoutes } from "@/routes/user.routes.js";
 import { recordRoutes } from "@/routes/record.routes.js";
 import { dashboardRoutes } from "@/routes/dashboard.routes.js";
+import { auditRoutes } from "@/routes/audit.routes.js";
 
 const CORS_MAX_AGE = 3600;
 
@@ -39,5 +40,6 @@ app.route("/auth", authRoutes);
 app.route("/users", userRoutes);
 app.route("/records", recordRoutes);
 app.route("/dashboard", dashboardRoutes);
+app.route("/audit-logs", auditRoutes);
 
 export { app };
