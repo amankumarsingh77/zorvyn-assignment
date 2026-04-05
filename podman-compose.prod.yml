@@ -12,6 +12,8 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-net
     restart: unless-stopped
 
   api:
@@ -29,7 +31,13 @@ services:
       JWT_EXPIRY: ${JWT_EXPIRY:-24h}
     depends_on:
       - postgres
+    networks:
+      - app-net
     restart: unless-stopped
 
 volumes:
   pgdata:
+
+networks:
+  app-net:
+    driver: bridge
