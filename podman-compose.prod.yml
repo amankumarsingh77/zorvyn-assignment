@@ -12,8 +12,12 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
 
   api:
@@ -24,20 +28,16 @@ services:
     ports:
       - "0.0.0.0:3000:3000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.containers.internal:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
       CORS_ORIGINS: ${CORS_ORIGINS}
       JWT_EXPIRY: ${JWT_EXPIRY:-24h}
+      DB_HOST: host.containers.internal
+      DB_PORT: 5432
     depends_on:
       - postgres
-    networks:
-      - app-net
     restart: unless-stopped
 
 volumes:
   pgdata:
-
-networks:
-  app-net:
-    driver: bridge

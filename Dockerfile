@@ -27,11 +27,14 @@ ENV NODE_ENV=production
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
+RUN apk add --no-cache postgresql-client
 
 COPY --from=build /app/dist ./dist
 COPY --from=generate /app/generated ./dist/generated
 COPY prisma ./prisma
+COPY wait-for-db.sh /usr/local/bin/
 
 EXPOSE 3000
 
+ENTRYPOINT ["wait-for-db.sh"]
 CMD ["node", "dist/src/index.js"]
