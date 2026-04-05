@@ -110,10 +110,16 @@ beforeAll(async () => {
 
 afterAll(async () => {
   if (createdRecordIds.length > 0) {
+    await prisma.auditLog.deleteMany({
+      where: { entityId: { in: createdRecordIds } },
+    });
     await prisma.record.deleteMany({
       where: { id: { in: createdRecordIds } },
     });
   }
+  await prisma.auditLog.deleteMany({
+    where: { user: { email: { in: createdUserEmails } } },
+  });
   await prisma.user.deleteMany({
     where: { email: { in: createdUserEmails } },
   });

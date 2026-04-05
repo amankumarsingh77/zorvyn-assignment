@@ -172,7 +172,7 @@ describe("createRecord", () => {
       date: new Date("2024-06-01"),
       notes: undefined,
       creator: { connect: { id: "user-1" } },
-    });
+    }, "user-1");
   });
 
   it("passes all fields including optional notes", async () => {
@@ -194,7 +194,7 @@ describe("createRecord", () => {
       date: new Date("2024-07-15"),
       notes: "Lunch with team",
       creator: { connect: { id: "user-2" } },
-    });
+    }, "user-2");
   });
 });
 
@@ -208,16 +208,16 @@ describe("updateRecord", () => {
     mockFindRecordById.mockResolvedValueOnce(sampleRecord);
     mockUpdateRecordById.mockResolvedValueOnce(updatedRecord);
 
-    const result = await updateRecord("rec-1", { category: "bonus" });
+    const result = await updateRecord("rec-1", { category: "bonus" }, "user-1");
 
     expect(result).toEqual(updatedRecord);
-    expect(mockUpdateRecordById).toHaveBeenCalledWith("rec-1", { category: "bonus" });
+    expect(mockUpdateRecordById).toHaveBeenCalledWith("rec-1", { category: "bonus" }, "user-1");
   });
 
   it("throws NOT_FOUND when record does not exist", async () => {
     mockFindRecordById.mockResolvedValueOnce(null);
 
-    await expect(updateRecord("nonexistent", { category: "bonus" }))
+    await expect(updateRecord("nonexistent", { category: "bonus" }, "user-1"))
       .rejects
       .toMatchObject({ code: "NOT_FOUND", statusCode: 404 });
   });
@@ -232,15 +232,15 @@ describe("deleteRecord", () => {
     mockFindRecordById.mockResolvedValueOnce(sampleRecord);
     mockDeleteRecordById.mockResolvedValueOnce(undefined);
 
-    await deleteRecord("rec-1");
+    await deleteRecord("rec-1", "user-1");
 
-    expect(mockDeleteRecordById).toHaveBeenCalledWith("rec-1");
+    expect(mockDeleteRecordById).toHaveBeenCalledWith("rec-1", "user-1");
   });
 
   it("throws NOT_FOUND when not found", async () => {
     mockFindRecordById.mockResolvedValueOnce(null);
 
-    await expect(deleteRecord("nonexistent"))
+    await expect(deleteRecord("nonexistent", "user-1"))
       .rejects
       .toMatchObject({ code: "NOT_FOUND", statusCode: 404 });
   });
