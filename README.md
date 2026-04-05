@@ -53,8 +53,11 @@ pnpm dev               # Server starts at http://localhost:3000
 | test:unit   | `vitest run tests/unit` | Run unit tests only                |
 | test:e2e    | `vitest run tests/e2e` | Run e2e tests (requires database)  |
 | test:watch  | `vitest`               | Watch mode tests                    |
+| lint        | `eslint .`             | Run ESLint across the codebase      |
+| lint:fix    | `eslint . --fix`       | Run ESLint and auto-fix violations  |
 | db:generate | `prisma generate`      | Regenerate Prisma client            |
 | db:migrate  | `prisma migrate dev`   | Create and apply migrations         |
+| db:push     | `prisma db push`       | Push schema changes without migration |
 | db:seed     | `tsx prisma/seed.ts`   | Seed database with sample data      |
 | infra:up    | `podman-compose up -d` | Start PostgreSQL                    |
 | infra:down  | `podman-compose down`  | Stop PostgreSQL                     |
@@ -494,6 +497,10 @@ A separate categories table would require admin endpoints to manage categories, 
 ### Why Decimal(12,2) for amounts (not float)
 
 IEEE 754 floating point cannot represent values like 0.10 exactly, leading to rounding errors in financial calculations. PostgreSQL's Decimal type stores exact values. Prisma exposes this as a Decimal object, preserving precision through the entire stack.
+
+### Why transactional audit logging
+
+Record create, update, and delete operations write an audit log entry within the same database transaction. This guarantees that every mutation is logged -- if the audit log write fails, the entire operation rolls back. The audit log stores a JSON snapshot of the changes (before/after for updates, full record for create/delete), the action type, and the user who performed it. This provides a complete, tamper-resistant history of financial data changes without relying on application-level logging.
 
 ## Assumptions
 
