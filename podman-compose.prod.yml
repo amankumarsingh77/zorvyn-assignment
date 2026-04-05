@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: finance-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance-api
+    ports:
+      - "0.0.0.0:3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      JWT_EXPIRY: ${JWT_EXPIRY:-24h}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  pgdata:
