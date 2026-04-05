@@ -28,8 +28,8 @@ ENV NODE_ENV=production
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
 
-COPY --from=generate /app/generated ./generated
 COPY --from=build /app/dist ./dist
+COPY --from=generate /app/generated ./dist/generated
 COPY prisma ./prisma
 
 EXPOSE 3000
